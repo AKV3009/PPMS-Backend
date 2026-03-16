@@ -8,11 +8,8 @@ export class AuthService {
   private usersRepo = AppDataSource.getRepository(User);
   private refreshTokenRepo = AppDataSource.getRepository(RefreshToken);
 
-  // ---------------- REGISTER ----------------
   async register(email: string, password: string, name?: string) {
-    const existing = await this.usersRepo.findOne({
-      where: { email },
-    });
+    const existing = await this.usersRepo.findOne({ where: { email } });
 
     if (existing) {
       throw new Error("EMAIL_EXISTS");
@@ -20,20 +17,13 @@ export class AuthService {
 
     const passwordHash = await hashPassword(password);
 
-    const user = this.usersRepo.create({
-      email,
-      passwordHash,
-      name,
-    });
+    const user = this.usersRepo.create({ email, passwordHash, name });
 
     return await this.usersRepo.save(user);
   }
 
-  // ---------------- LOGIN ----------------
   async login(email: string, password: string) {
-    const user = await this.usersRepo.findOne({
-      where: { email },
-    });
+    const user = await this.usersRepo.findOne({ where: { email } });
 
     if (!user || !user.isActive) {
       throw new Error("INVALID_CREDENTIALS");
@@ -55,24 +45,22 @@ export class AuthService {
 
     await this.refreshTokenRepo.save(refreshTokenEntity);
 
-    await this.usersRepo.update(user.id, {
-      lastLoginAt: new Date(),
-    });
+    await this.usersRepo.update(user.id, { lastLoginAt: new Date() });
 
-    let userDetails = {
-      name:user.name,
-      id:user.id,
-      email:user.email,
-      role:user.role
-    }
-    return { accessToken,userDetails, refreshToken };
+    const userDetails = {
+      name: user.name,
+      id: user.id,
+      email: user.email,
+      role: user.role,
+    };
+
+    return { accessToken, userDetails, refreshToken };
   }
 
-  // ---------------- REFRESH TOKEN ----------------
   async refresh(refreshToken: string) {
     const stored = await this.refreshTokenRepo.findOne({
       where: { token: refreshToken },
-      relations: ["user"], // TypeORM equivalent of Prisma include
+      relations: ["user"],
     });
 
     if (!stored || stored.expiresAt < new Date()) {
@@ -84,10 +72,7 @@ export class AuthService {
     return { accessToken };
   }
 
-  // ---------------- LOGOUT ----------------
   async logout(refreshToken: string) {
-    await this.refreshTokenRepo.delete({
-      token: refreshToken,
-    });
+    await this.refreshTokenRepo.delete({ token: refreshToken });
   }
 }

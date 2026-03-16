@@ -6,7 +6,7 @@ const authService = new AuthService();
 export class AuthController {
   async register(req: Request, res: Response) {
     try {
-      const { email, password, name } = req.body; 
+      const { email, password, name } = req.body;
       const user = await authService.register(email, password, name);
       res.status(201).json({ id: user.id });
     } catch (err: any) {
@@ -41,8 +41,12 @@ export class AuthController {
   }
 
   async logout(req: Request, res: Response) {
-    const { refreshToken } = req.body;
-    await authService.logout(refreshToken);
-    res.json({ message: "Logged out" });
+    try {
+      const { refreshToken } = req.body;
+      await authService.logout(refreshToken);
+      res.json({ message: "Logged out" });
+    } catch {
+      res.status(500).json({ message: "Logout failed" });
+    }
   }
 }
