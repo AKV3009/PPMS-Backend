@@ -27,7 +27,7 @@ app.use(express.json());
 app.use("/auth", authRouter);
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerOutput));
 
-app.use(authMiddleware)
+// app.use(authMiddleware)
 
 AppDataSource.initialize()
 .then(() => console.log("Database connected"))
