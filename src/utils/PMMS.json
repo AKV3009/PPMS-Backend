@@ -1,0 +1,152 @@
+{
+  "info": {
+    "name": "PMMS Backend API – ALL PATHS",
+    "_postman_id": "pmms-all-paths-collection-0001",
+    "description": "Complete PMMS Backend APIs with ALL routes: Auth, Employees, department, dealer, Size, Sheet, Issue, Issue Employees",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:3000" },
+    { "key": "token", "value": "" },
+    { "key": "refreshToken", "value": "" }
+  ],
+  "item": [
+
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@pmms.com\",\n  \"password\": \"password123\",\n  \"name\": \"Admin\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"admin@pmms.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const res = pm.response.json();",
+                  "pm.environment.set('token', res.accessToken);",
+                  "pm.environment.set('refreshToken', res.refreshToken);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Refresh Token",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/refresh", "host": ["{{baseUrl}}"], "path": ["auth", "refresh"] }
+          }
+        },
+        {
+          "name": "Logout",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"refreshToken\": \"{{refreshToken}}\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/logout", "host": ["{{baseUrl}}"], "path": ["auth", "logout"] }
+          }
+        }
+      ]
+    },
+
+    {
+      "name": "Employee",
+      "item": [
+        { "name": "Get All", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/employees?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["employees"], "query": [{ "key": "page", "value": "1" }, { "key": "limit", "value": "10" }] } } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] } } },
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"John\",\n  \"lastName\": \"Doe\",\n  \"email\": \"john@pmms.com\",\n  \"departmentId\": 1\n}" }, "url": { "raw": "{{baseUrl}}/employees", "host": ["{{baseUrl}}"], "path": ["employees"] } } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{\n  \"firstName\": \"Johnny\"\n}" }, "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] } } },
+        { "name": "Soft Delete", "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/employees/1/soft-delete", "host": ["{{baseUrl}}"], "path": ["employees", "1", "soft-delete"] } } },
+        { "name": "Hard Delete", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/employees/1", "host": ["{{baseUrl}}"], "path": ["employees", "1"] } } }
+      ]
+    },
+
+    {
+      "name": "Department",
+      "item": [
+        { "name": "Get All", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/department?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["department"] } } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/department/1", "host": ["{{baseUrl}}"], "path": ["department", "1"] } } },
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"departmentName\": \"QC\" }" }, "url": { "raw": "{{baseUrl}}/department", "host": ["{{baseUrl}}"], "path": ["department"] } } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"departmentName\": \"Production\" }" }, "url": { "raw": "{{baseUrl}}/department/1", "host": ["{{baseUrl}}"], "path": ["department", "1"] } } },
+        { "name": "Soft Delete", "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/department/1/soft-delete", "host": ["{{baseUrl}}"], "path": ["department", "1", "soft-delete"] } } },
+        { "name": "Hard Delete", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/department/1", "host": ["{{baseUrl}}"], "path": ["department", "1"] } } }
+      ]
+    },
+
+    {
+      "name": "Dealer",
+      "item": [
+        { "name": "Get All", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/dealer?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["dealer"] } } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/dealer/1", "host": ["{{baseUrl}}"], "path": ["dealer", "1"] } } },
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"dealerName\": \"ABC Fabrics\" }" }, "url": { "raw": "{{baseUrl}}/dealer", "host": ["{{baseUrl}}"], "path": ["dealer"] } } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"phone\": \"+92-300-0000000\" }" }, "url": { "raw": "{{baseUrl}}/dealer/1", "host": ["{{baseUrl}}"], "path": ["dealer", "1"] } } },
+        { "name": "Soft Delete", "request": { "method": "PATCH", "url": { "raw": "{{baseUrl}}/dealer/1/soft-delete", "host": ["{{baseUrl}}"], "path": ["dealer", "1", "soft-delete"] } } },
+        { "name": "Hard Delete", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/dealer/1", "host": ["{{baseUrl}}"], "path": ["dealer", "1"] } } }
+      ]
+    },
+
+    {
+      "name": "Size",
+      "item": [
+        { "name": "Get All", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/Size?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["Size"] } } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/Size/1", "host": ["{{baseUrl}}"], "path": ["Size", "1"] } } },
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"sizeValue\": 32 }" }, "url": { "raw": "{{baseUrl}}/Size", "host": ["{{baseUrl}}"], "path": ["Size"] } } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"sizeValue\": 34 }" }, "url": { "raw": "{{baseUrl}}/Size/1", "host": ["{{baseUrl}}"], "path": ["Size", "1"] } } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/Size/1", "host": ["{{baseUrl}}"], "path": ["Size", "1"] } } }
+      ]
+    },
+
+
+    {
+      "name": "Sheet",
+      "item": [
+        { "name": "Get All", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/Sheet?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["Sheet"] } } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/Sheet/1", "host": ["{{baseUrl}}"], "path": ["Sheet", "1"] } } },
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"dealerId\": 1, \"lotNumber\": \"LOT-001\" }" }, "url": { "raw": "{{baseUrl}}/Sheet", "host": ["{{baseUrl}}"], "path": ["Sheet"] } } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"lotNumber\": \"LOT-002\" }" }, "url": { "raw": "{{baseUrl}}/Sheet/1", "host": ["{{baseUrl}}"], "path": ["Sheet", "1"] } } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/Sheet/1", "host": ["{{baseUrl}}"], "path": ["Sheet", "1"] } } }
+      ]
+    },
+
+    {
+      "name": "Issue",
+      "item": [
+        { "name": "Get All", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/Issue?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["Issue"] } } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/Issue/1", "host": ["{{baseUrl}}"], "path": ["Issue", "1"] } } },
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"sheetId\": 1, \"issueCode\": \"ISS-001\", \"meter\": 2.5 }" }, "url": { "raw": "{{baseUrl}}/Issue", "host": ["{{baseUrl}}"], "path": ["Issue"] } } },
+        { "name": "Update", "request": { "method": "PUT", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"meter\": 3 }" }, "url": { "raw": "{{baseUrl}}/Issue/1", "host": ["{{baseUrl}}"], "path": ["Issue", "1"] } } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/Issue/1", "host": ["{{baseUrl}}"], "path": ["Issue", "1"] } } }
+      ]
+    },
+
+    {
+      "name": "Issue Employee",
+      "item": [
+        { "name": "Get All", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/issue-employee?page=1&limit=10", "host": ["{{baseUrl}}"], "path": ["issue-employee"] } } },
+        { "name": "Get By ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/issue-employee/1", "host": ["{{baseUrl}}"], "path": ["issue-employee", "1"] } } },
+        { "name": "Create", "request": { "method": "POST", "header": [{ "key": "Content-Type", "value": "application/json" }], "body": { "mode": "raw", "raw": "{ \"issueId\": 1, \"employeeId\": 2 }" }, "url": { "raw": "{{baseUrl}}/issue-employee", "host": ["{{baseUrl}}"], "path": ["issue-employee"] } } },
+        { "name": "Delete", "request": { "method": "DELETE", "url": { "raw": "{{baseUrl}}/issue-employee/1", "host": ["{{baseUrl}}"], "path": ["issue-employee", "1"] } } },
+        { "name": "Get By Issue ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/issue-employee/issue/1", "host": ["{{baseUrl}}"], "path": ["issue-employee", "issue", "1"] } } },
+        { "name": "Get By Employee ID", "request": { "method": "GET", "url": { "raw": "{{baseUrl}}/issue-employee/employee/1", "host": ["{{baseUrl}}"], "path": ["issue-employee", "employee", "1"] } } }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,130 @@
+export function buildSheetHtml(data: any): string {
+  // Generate the main table rows (typically based on Bales or Rolls)
+  const rows = (data.rows || Array(15).fill({})).map((row: any, idx: number) => `
+    <tr>
+      <td>${idx + 1}</td>
+      <td>${row.bale || ''}</td>
+      <td>${row.mtr || ''}</td>
+      <td>${row.short || ''}</td>
+      <td>${row.pcs || ''}</td>
+      <td>${row.s28 || ''}</td>
+      <td>${row.s30 || ''}</td>
+      <td>${row.s32 || ''}</td>
+      <td>${row.s34 || ''}</td>
+      <td>${row.s36 || ''}</td>
+      <td>${row.s38 || ''}</td>
+      <td>${row.s40 || ''}</td>
+      <td>${row.fabric || ''}</td>
+    </tr>
+  `).join('');
+
+  return `
+  <html>
+  <head>
+    <style>
+      body { font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #333; }
+      .sheet-container { width: 100%; max-width: 900px; margin: auto; border: 2px solid #000; padding: 10px; }
+      
+      /* Header Table */
+      .header-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; }
+      .header-table td { border: 1px solid #000; padding: 4px 8px; text-align: left; }
+      .top-meta { display: flex; justify-content: space-between; margin-bottom: 5px; font-weight: bold; }
+
+      /* Main Grid */
+      .main-table { width: 100%; border-collapse: collapse; }
+      .main-table th { background: #e0e0e0; border: 1px solid #000; padding: 5px; font-size: 11px; text-transform: uppercase; }
+      .main-table td { border: 1px solid #000; height: 22px; text-align: center; }
+      
+      /* Footer Section */
+      .footer-section { display: flex; width: 100%; border-top: 2px solid #000; margin-top: 10px; }
+      .footer-col { flex: 1; border: 1px solid #000; }
+      .footer-row { display: flex; border-bottom: 1px solid #000; }
+      .footer-row:last-child { border-bottom: none; }
+      .footer-label { flex: 2; padding: 4px; font-weight: bold; border-right: 1px solid #000; background: #f9f9f9; }
+      .footer-value { flex: 1; padding: 4px; }
+    </style>
+  </head>
+  <body>
+    <div class="sheet-container">
+      <div class="top-meta">
+        <span>MILL: ${data.millName || '________________'}</span>
+        <span>CH: ${data.challanNumber || '____'}</span>
+        <span>DATE: ___ / ___ / 202__</span>
+      </div>
+
+      <table class="header-table">
+        <tr>
+          <td><strong>LOT NO. :</strong> ${data.lotNo || ''}</td>
+          <td><strong>TOTAL PSC. :</strong> ${data.totalPsc || ''}</td>
+        </tr>
+        <tr>
+          <td><strong>PARTY :</strong> ${data.fabricPartyName || ''}</td>
+          <td><strong>LABLE :</strong> ${data.label || ''}</td>
+        </tr>
+        <tr>
+          <td><strong>STYLE :</strong> ${data.style || ''}</td>
+          <td><strong>POCKTING :</strong> ${data.pocketing || ''}</td>
+        </tr>
+        <tr>
+          <td><strong>LENGTH :</strong> ${data.length || ''} &nbsp;&nbsp; <strong>READY:</strong> ${data.ready || ''}</td>
+          <td><strong>ZIPPER :</strong> ${data.zipper || ''}</td>
+        </tr>
+        <tr>
+          <td><strong>FABRIC :</strong> ${data.fabricType || ''}</td>
+          <td><strong>CUT-PKT:</strong> ---------</td>
+        </tr>
+        <tr>
+          <td><strong>WIDTH :</strong> ${data.width || ''}</td>
+          <td><strong>BONE:</strong> ---------</td>
+        </tr>
+        <tr>
+          <td><strong>ROLL :</strong> ${data.rollNumber || ''}</td>
+          <td><strong>F-PKT:</strong> ---------</td>
+        </tr>
+        <tr>
+          <td><strong>METRE :</strong> ${data.totalMetre || ''}</td>
+          <td><strong>THREAD:</strong> ---------</td>
+        </tr>
+        <tr>
+          <td><strong>COLOUR :</strong> ${data.color || ''} &nbsp;&nbsp; <strong>AVG:</strong> ${data.avg || ''}</td>
+          <td><strong>STITCH:</strong> ---------</td>
+        </tr>
+      </table>
+
+      <table class="main-table">
+        <thead>
+          <tr>
+            <th>NO.</th><th>BALE</th><th>MTR</th><th>SHORT</th><th>PCS</th>
+            <th>28</th><th>30</th><th>32</th><th>34</th><th>36</th><th>38</th><th>40</th>
+            <th>FEBRIC</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${rows}
+          <tr style="font-weight:bold; background:#eee;">
+            <td colspan="4">GRAND TOTAL</td>
+            <td>${data.totalQty || ''}</td>
+            <td colspan="8"></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="footer-section">
+        <div class="footer-col">
+          <div class="footer-row"><div class="footer-label">TOTAL PSC CUTTING IN LAYER</div><div class="footer-value"></div></div>
+          <div class="footer-row"><div class="footer-label">TOTAL PSC HAND CUTTING</div><div class="footer-value"></div></div>
+          <div class="footer-row"><div class="footer-label">GRAND TOTAL</div><div class="footer-value"></div></div>
+          <div class="footer-row"><div class="footer-label">BALANCE FABRIC</div><div class="footer-value"></div></div>
+        </div>
+        <div class="footer-col">
+          <div class="footer-row"><div class="footer-label">WIAS- EX</div><div class="footer-value"></div></div>
+          <div class="footer-row"><div class="footer-label">BELT</div><div class="footer-value"></div></div>
+          <div class="footer-row"><div class="footer-label">FISING</div><div class="footer-value"></div></div>
+          <div class="footer-row"><div class="footer-label">B-PKT</div><div class="footer-value"></div></div>
+        </div>
+      </div>
+    </div>
+  </body>
+  </html>
+  `;
+}
