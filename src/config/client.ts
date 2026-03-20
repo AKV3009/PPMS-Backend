@@ -23,6 +23,7 @@ export const AppDataSource = new DataSource({
   password: process.env.DB_PASS,
   database: process.env.DB_NAME,
   synchronize: true,
+  ssl: process.env.DB_SSL === 'true' ? { rejectUnauthorized: false } : false,
   logging: false,
   entities: [
     User,
