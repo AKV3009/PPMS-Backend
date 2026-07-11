@@ -9,7 +9,7 @@ import { CalculationDto } from "../entities/DTOs/Createproject.dto";
 import { Size } from "../entities/sizes.entity";
 import { SheetCalculation } from "../entities/sheetCalculation.entity";
 import { buildSheetHtml } from "../utils/buildPdf";
-import puppeteer from "puppeteer";
+import { launchPdfBrowser } from "../utils/browser";
 
 export class SheetService {
   private sheetRepo = AppDataSource.getRepository(Sheet);
@@ -212,12 +212,7 @@ const htmlData = {
   })).sort((a, b) => a.bale - b.bale) // Optional: sort by TP number
 };
     const html = buildSheetHtml(htmlData);
-    const browser = await puppeteer.launch({
-      executablePath:
-        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
+    const browser = await launchPdfBrowser();
 
     try {
       const page = await browser.newPage();

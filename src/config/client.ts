@@ -12,6 +12,7 @@ import { Tp } from "../entities/tp.entity";
 import { SizeConfig } from "../entities/sizeConfigs.entity";
 import { SheetCalculation } from "../entities/sheetCalculation.entity";
 import { Employee } from "../entities/employee.entity";
+import { PasswordResetToken } from "../entities/passwordResetToken.entity";
 
 dotenv.config();
 
@@ -28,6 +29,7 @@ export const AppDataSource = new DataSource({
   entities: [
     User,
     RefreshToken,
+    PasswordResetToken,
     Department,
     Employee,
     Dealer,

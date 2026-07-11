@@ -8,6 +8,8 @@ const controller = new EmployeeController();
 employeeRouter.get("/salary-report", controller.getSalaryReport.bind(controller));
 employeeRouter.get("/", controller.getAll.bind(controller));
 // #swagger.tags = ['Employees']
+employeeRouter.get("/:id/salary-slip", controller.downloadSalarySlip.bind(controller));
+// #swagger.tags = ['Employees']
 employeeRouter.get("/:id", controller.getById.bind(controller));
 // #swagger.tags = ['Employees']
 employeeRouter.post("/", controller.create.bind(controller));

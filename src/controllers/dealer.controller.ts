@@ -30,6 +30,19 @@ export class DealerController {
     }
   }
 
+  async getDealerDropdown(req: Request, res: Response) {
+    try {
+      logger.info(`[DealerController] GET /dealer/dropdown`);
+
+      const data = await service.getDropdown();
+      logger.info(`[DealerController] Successfully retrieved dealer dropdown`);
+      res.status(200).json(data);
+    } catch (err: any) {
+      logger.error(`[DealerController] Error in getDropdown: ${err.message}`);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
   async getDealerById(req: Request, res: Response) {
     try {
       const id = Number(req.params.id);

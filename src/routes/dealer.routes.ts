@@ -5,6 +5,7 @@ const dealerRouter = Router();
 const controller = new DealerController();
 
 dealerRouter.get("/", controller.getAllDealers.bind(controller));
+dealerRouter.get("/dropdown", controller.getDealerDropdown.bind(controller));
 dealerRouter.get("/:id", controller.getDealerById.bind(controller));
 dealerRouter.post("/", controller.saveDealer.bind(controller));
 dealerRouter.put("/:id", controller.saveDealer.bind(controller));

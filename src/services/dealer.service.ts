@@ -39,6 +39,28 @@ export class DealerService {
   }
   
 
+  async getDropdown() {
+    try {
+      logger.info(`[DealerService] Fetching dealers for dropdown`);
+
+      const data = await this.DealerRepo.find({
+        select: { id: true, dealerName: true },
+        where: { isDeleted: false, isActive: true },
+        order: { dealerName: "ASC" },
+      });
+
+      logger.info(
+        `[DealerService] Successfully fetched ${data.length} dealers for dropdown`
+      );
+      return data;
+    } catch (err: any) {
+      logger.error(
+        `[DealerService] Error fetching dealers for dropdown: ${err.message}`
+      );
+      throw err;
+    }
+  }
+
   async getById(id: number) {
     try {
       logger.info(`[DealerService] Fetching dealer with ID: ${id}`);

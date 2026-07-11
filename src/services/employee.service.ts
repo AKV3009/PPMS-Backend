@@ -1,4 +1,5 @@
 import { Between } from "typeorm/find-options/operator/Between";
+import { launchPdfBrowser } from "../utils/browser";
 import { AppDataSource } from "../config/client";
 import {
   CreateEmployeeDto,
@@ -6,6 +7,7 @@ import {
 } from "../entities/DTOs/employee.dtos";
 import { Employee } from "../entities/employee.entity";
 import { Sheet } from "../entities/sheet.entity";
+import { buildSalarySlipHtml } from "../utils/buildSalarySlipHtml";
 
 export class EmployeeService {
   private repo = AppDataSource.getRepository(Employee);
@@ -164,7 +166,7 @@ async getMonthlySalaryReport(month: number, year: number) {
   const reportMap = new Map<number, any>();
 
   sheets.forEach((sheet) => {
-    sheet.issues.forEach((issue) => {
+    (sheet.issues || []).forEach((issue) => {
       // 2. Auto-calculate for Front side worker
       if (issue.frontEmployee) {
         this.autoCalculate(reportMap, issue.frontEmployee, sheet, issue, 'FRONT');
@@ -184,7 +186,7 @@ private autoCalculate(map: Map<number, any>, emp: any, sheet: Sheet, issue: any,
   const rate = dept === 'FRONT' ? Number(sheet.frontRate) : Number(sheet.backRate);
   
   // Get TP Numbers this specific employee worked on in this issue
-  const workerTpValues = issue.tps.map((t: any) => t.tpValue);
+  const workerTpValues = (issue.tps || []).map((t: any) => t.tpValue);
   
   // CROSS-REFERENCE: Find the pieces from the calculations array matching these TPs
   const pcs = (sheet.calculations || [])
@@ -196,8 +198,9 @@ private autoCalculate(map: Map<number, any>, emp: any, sheet: Sheet, issue: any,
   const key = emp.id;
   if (!map.has(key)) {
     map.set(key, {
+      employeeId: emp.id,
       employeeName: `${emp.firstName} ${emp.lastName}`,
-      dept: emp.department?.name || dept, // Use actual dept or current role
+      dept: emp.department?.departmentName || dept, // Use actual dept or current role
       totalPcs: 0,
       totalSalary: 0,
       workDetails: [],
@@ -216,4 +219,44 @@ private autoCalculate(map: Map<number, any>, emp: any, sheet: Sheet, issue: any,
     amount: pcs * rate,
     date: sheet.cuttingDate
   });
+}
+
+async generateSalarySlipBuffer(employeeId: number, month: number, year: number): Promise<Buffer> {
+  if (!employeeId || employeeId <= 0) {
+    throw new Error("INVALID_ID");
+  }
+
+  // Reuse the exact monthly computation, then pick this one employee's entry
+  const report = await this.getMonthlySalaryReport(month, year);
+  const entry = report.find((r) => r.employeeId === employeeId);
+
+  if (!entry) {
+    // Either the employee doesn't exist or has no recorded work this period
+    const employee = await this.repo.findOne({ where: { id: employeeId } });
+    if (!employee) throw new Error("EMPLOYEE_NOT_FOUND");
+    throw new Error("NO_SALARY_DATA");
+  }
+
+  const monthNames = [
+    "January", "February", "March", "April", "May", "June",
+    "July", "August", "September", "October", "November", "December",
+  ];
+  const periodLabel = `${monthNames[month - 1] || month} ${year}`;
+
+  const html = buildSalarySlipHtml({ ...entry, periodLabel });
+
+  const browser = await launchPdfBrowser();
+
+  try {
+    const page = await browser.newPage();
+    await page.setContent(html, { waitUntil: "networkidle0" });
+    const pdfBuffer = await page.pdf({
+      format: "A4",
+      printBackground: true,
+      margin: { top: "20px", bottom: "20px" },
+    });
+    return Buffer.from(pdfBuffer);
+  } finally {
+    await browser.close();
+  }
 }}

@@ -228,4 +228,50 @@ export class EmployeeController {
       res.status(500).json({ message: "Internal server error while calculating salary" });
     }
   }
+
+  async downloadSalarySlip(req: Request, res: Response): Promise<void> {
+    try {
+      const id = Number(req.params.id);
+      const month = Number(req.query.month);
+      const year = Number(req.query.year);
+
+      if (!id || isNaN(id)) {
+        res.status(400).json({ message: "Invalid ID" });
+        return;
+      }
+      if (!month || isNaN(month) || month < 1 || month > 12) {
+        res.status(400).json({ message: "Valid month (1-12) is required" });
+        return;
+      }
+      if (!year || isNaN(year)) {
+        res.status(400).json({ message: "Valid year is required" });
+        return;
+      }
+
+      const pdfBuffer = await service.generateSalarySlipBuffer(id, month, year);
+
+      res.set({
+        "Content-Type": "application/pdf",
+        "Content-Disposition": `attachment; filename="salary-slip-${id}-${month}-${year}.pdf"`,
+        "Content-Length": pdfBuffer.length,
+        "Cache-Control": "no-cache, no-store, must-revalidate",
+      });
+      res.end(pdfBuffer);
+    } catch (err: any) {
+      if (err.message === "INVALID_ID") {
+        res.status(400).json({ message: "Invalid ID" });
+        return;
+      }
+      if (err.message === "EMPLOYEE_NOT_FOUND") {
+        res.status(404).json({ message: "Employee not found" });
+        return;
+      }
+      if (err.message === "NO_SALARY_DATA") {
+        res.status(404).json({ message: "No salary data for this employee in the selected period" });
+        return;
+      }
+      console.error("[SALARY_SLIP_ERROR]:", err);
+      res.status(500).json({ message: "Internal server error while generating salary slip" });
+    }
+  }
 }
